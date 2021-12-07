@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Blazr.Demo.Routing.Controllers\Blazr.Demo.Routing.Controllers.csproj" />
+		<ProjectReference Include="..\Blazr.Demo.Routing.Config\Blazr.Demo.Routing.Config.csproj" />
+		<ProjectReference Include="..\Blazr.Demo.Routing.UI\Blazr.Demo.Routing.UI.csproj" />
+		<ProjectReference Include="..\Blazr.Demo.Routing.WASM\Blazr.Demo.Routing.WASM.csproj" />
+	</ItemGroup>
+
+</Project>

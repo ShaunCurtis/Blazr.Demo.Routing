@@ -1,0 +1,84 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.Demo.Routing.Config", "Blazr.Demo.Routing.Config\Blazr.Demo.Routing.Config.csproj", "{CCCF33AE-1945-4787-BA9A-D00F81A4B712}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.Demo.Routing.Controllers", "Blazr.Demo.Routing.Controllers\Blazr.Demo.Routing.Controllers.csproj", "{0B9EB166-746A-47B6-A0A3-059FF17D2715}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.Demo.Routing.Core", "Blazr.Demo.Routing.Core\Blazr.Demo.Routing.Core.csproj", "{A34A54B6-0782-48B7-8194-0A29BE0EEE1E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.Demo.Routing.Data", "Blazr.Demo.Routing.Data\Blazr.Demo.Routing.Data.csproj", "{7CF63D7B-6768-448E-973F-7209CCD9333D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.Demo.Routing.UI", "Blazr.Demo.Routing.UI\Blazr.Demo.Routing.UI.csproj", "{FF935660-FFB7-40C0-AC36-A1E61CE2C537}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.Demo.Routing.Server.Web", "Blazr.Demo.Routing.Server.Web\Blazr.Demo.Routing.Server.Web.csproj", "{FE9910BD-1C93-4372-833F-E2020338AB7A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.Demo.Routing.WASM", "Blazr.Demo.Routing.WASM\Blazr.Demo.Routing.WASM.csproj", "{98A73F70-43F7-43D0-BFA4-5C9C5D33F28E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.Demo.Routing.WASM.Web", "Blazr.Demo.Routing.WASM.Web\Blazr.Demo.Routing.WASM.Web.csproj", "{3E799A28-35D2-4E4D-85B3-990F51361891}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.Demo.Routing.Tests", "Blazr.Demo.Routing.Tests\Blazr.Demo.Routing.Tests.csproj", "{7CC71712-665F-472B-934D-A226003E0057}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazr.Routing", "Blazr.Routing\Blazr.Routing.csproj", "{D48BA83D-AB86-4537-AEB9-A0CE40CA324E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E4F33529-2F9B-4D6C-8AE3-7D8E6C4D750C}"
+	ProjectSection(SolutionItems) = preProject
+		readme.md = readme.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CCCF33AE-1945-4787-BA9A-D00F81A4B712}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCCF33AE-1945-4787-BA9A-D00F81A4B712}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCCF33AE-1945-4787-BA9A-D00F81A4B712}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCCF33AE-1945-4787-BA9A-D00F81A4B712}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B9EB166-746A-47B6-A0A3-059FF17D2715}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B9EB166-746A-47B6-A0A3-059FF17D2715}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B9EB166-746A-47B6-A0A3-059FF17D2715}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B9EB166-746A-47B6-A0A3-059FF17D2715}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A34A54B6-0782-48B7-8194-0A29BE0EEE1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A34A54B6-0782-48B7-8194-0A29BE0EEE1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A34A54B6-0782-48B7-8194-0A29BE0EEE1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A34A54B6-0782-48B7-8194-0A29BE0EEE1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CF63D7B-6768-448E-973F-7209CCD9333D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CF63D7B-6768-448E-973F-7209CCD9333D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CF63D7B-6768-448E-973F-7209CCD9333D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CF63D7B-6768-448E-973F-7209CCD9333D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF935660-FFB7-40C0-AC36-A1E61CE2C537}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF935660-FFB7-40C0-AC36-A1E61CE2C537}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF935660-FFB7-40C0-AC36-A1E61CE2C537}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF935660-FFB7-40C0-AC36-A1E61CE2C537}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE9910BD-1C93-4372-833F-E2020338AB7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE9910BD-1C93-4372-833F-E2020338AB7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE9910BD-1C93-4372-833F-E2020338AB7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE9910BD-1C93-4372-833F-E2020338AB7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98A73F70-43F7-43D0-BFA4-5C9C5D33F28E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98A73F70-43F7-43D0-BFA4-5C9C5D33F28E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98A73F70-43F7-43D0-BFA4-5C9C5D33F28E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98A73F70-43F7-43D0-BFA4-5C9C5D33F28E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E799A28-35D2-4E4D-85B3-990F51361891}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E799A28-35D2-4E4D-85B3-990F51361891}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E799A28-35D2-4E4D-85B3-990F51361891}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E799A28-35D2-4E4D-85B3-990F51361891}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CC71712-665F-472B-934D-A226003E0057}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CC71712-665F-472B-934D-A226003E0057}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CC71712-665F-472B-934D-A226003E0057}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CC71712-665F-472B-934D-A226003E0057}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D48BA83D-AB86-4537-AEB9-A0CE40CA324E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D48BA83D-AB86-4537-AEB9-A0CE40CA324E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D48BA83D-AB86-4537-AEB9-A0CE40CA324E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D48BA83D-AB86-4537-AEB9-A0CE40CA324E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E7AAD12F-6D7F-45EF-8A51-31EB9030ACFA}
+	EndGlobalSection
+EndGlobal

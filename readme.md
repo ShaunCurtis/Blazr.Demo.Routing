@@ -1,0 +1,92 @@
+# Blazr.Demo.Routing
+
+This repo contains the code that demonstrates Blazor Navigation cancellation.
+
+It's a culmination of several iterations of my own work and code with a contributions from elsewhere including the new NavigationManager by Adam Stevenson documented in his [Github Repo here](https://github.com/SL-AdamStevenson).  There's a significant amount of Microsoft AspnetCore repository "lifted" code to rebuild the Blazor Router.
+
+The Repo is structured using my [Blazor Clean Design Template](https://github.com/ShaunCurtis/Blazr.Demo).  It's Net6.0,  can be run in either Web Assembly or Server modes - it's the same code base.  Just set the appropriate Startup project.
+
+Go to the "Edit Form Demo" page to see the form/page locking concepts in action.  Click on the button to toggle the form from dirty to clean and then attempt to navigate away from the page by clicking links, using the back button, F5 or clicking on favourites.
+
+## How Navigation Manager Works
+
+In both Web Assembly and Server all in-browser navigation events are captured by the Blazor JS code.  However, they are surfaced very differently in the NetCore libraries.
+
+In Web Assembly the JS navigation event code calls the `NotifyLocationChanged` JsInterop registered method.  This gets the current instance of `WebAssemblyNavigationManager` and calls `SetLocation`.  Note this gets the instance of `WebAssemblyNavigationManager` directly through it's `Instance` static method, not through the DI container.
+
+```csharp
+public static class JSInteropMethods
+{
+    [JSInvokable(nameof(NotifyLocationChanged))]
+    public static void NotifyLocationChanged(string uri, bool isInterceptedLink)
+    {
+        WebAssemblyNavigationManager.Instance.SetLocation(uri, isInterceptedLink);
+    }
+}
+```
+
+In Server the calls get transferred over the SignalR connection and are handled by the `ComponentHub`
+
+```csharp
+public async ValueTask OnLocationChanged(string uri, bool intercepted)
+{
+    var circuitHost = await GetActiveCircuitAsync();
+    if (circuitHost == null)
+        return;
+
+    _ = circuitHost.OnLocationChangedAsync(uri, intercepted);
+}
+```
+
+This calls the `CircuitHost` method:
+
+```csharp
+public async Task OnLocationChangedAsync(string uri, bool intercepted)
+{
+    await Renderer.Dispatcher.InvokeAsync(() =>
+    {
+        var navigationManager = (RemoteNavigationManager)Services.GetRequiredService<NavigationManager>();
+        navigationManager.NotifyLocationChanged(uri, intercepted);
+    });
+ }
+//lots of code missing to only show the relevant lines
+ ```
+
+This time it gets the registered `NavigationManager` service and casts it as a `RemoteNavigationManager` object before calling the `NotifyLocationChanged` method.
+
+## Running the Demo
+
+The demo can be run in either Web Assembly or Server modes.
+
+Set *Blazr.Demo.Routing.Server.Web* as the startup project to run the Server version.
+
+Set *Blazr.Demo.Routing.WASM.Web* as the startup project to run the Web Assembly version.
+
+
+
+## Implementation the Solution in a Project
+
+1. Add Blazr.Routing to the solution, and add project references to the various solution projects. 
+
+2. Change out the `Router` in `App.razor`
+
+```csharp
+@namespace Blazr.Demo.Routing.UI
+<BlazrRouter AppAssembly="@typeof(App).Assembly">
+  ......
+</BlazrRouter>
+```
+
+3. Add the new Navigation Manager service
+
+```
+services.AddBlazrNavigationManager();
+```
+
+4. Add the JS reference to __Hosts.html or __Layout.html.
+
+```
+    <script src="_content/Blazr.Routing/site.js"></script>
+```
+
+5. Review `EditForm.razor` for an implementation demo of how to respond to the `BeforeLocationChange` event and how to set the browser `beforeunload` event handler.
