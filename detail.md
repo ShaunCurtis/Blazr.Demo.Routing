@@ -1,10 +1,10 @@
 # Introduction
 
-The solution works by replacing the existing `Router` with a very lightly modified version of the out-of-the-box `Router`.  The new `BlazrRouter` replaces the DI injected `NavigigationManager` service with an interface defined service.  `IBlazrNavigationManager` defines the same NavigationManager properties and methods as the original.  The Router code knows no difference, it's the same.
+The solution works by replacing the existing `Router` with a very lightly modified version of the out-of-the-box `Router`.  The new `BlazrRouter` replaces the DI injected `NavigationManager` service with an interface defined service.  `IBlazrNavigationManager` defines the same NavigationManager properties and methods as the original.  The Router code doesn't care.
 
-This allows us to define an intermediate Navigation Manager between the standard Blazor `NavigationManager` or `RemoteNavigationManager` and the Router.  We now have control over whether we pass navigation requests to the router or discard them.
+This allows us to define an intermediate NavigationManager between the standard Blazor `NavigationManager` or `RemoteNavigationManager` and the Router.  We now have control over whether we pass navigation requests to the router or discard them.
 
-The one drawback is that the code has no access to `HotReloadManager` (thanks Microsoft!) so hot reloading is disabled, unless someone can show me how to do it.
+The one drawback is that the code has no access to `HotReloadManager` (thanks Microsoft!) so hot reloading is disabled.  Anyone know how to do it?
 
 ## Library
 
@@ -98,12 +98,12 @@ public class CoreNavigationManager : NavigationManager, IBlazrNavigationManager
 
 ### BlazrNavigationManager
 
-This is the real thing.
+This is the real implementation.
 
 1. `_baseNavigationManager` is where we keep the Blazor standard `NavigationManager`
-2. `_isBlindNavigation` is a bool used in the displayed Url reset process - more later.
-3. `IsLocked` is our locking control property.  You can't set it directly.
-4. There are three events whose purpose is self evident from their names and three Notify Methods for them.
+2. `_isBlindNavigation` is a bool used by the Url reset process - more later.
+3. `IsLocked` is our locking control property.  You can only set it through `SetLockState`.
+4. There are three events whose purpose is self evident from their names, and three notify methods for them.
 5. The constructor gets the Blazor Navigation Manager though DI, makes sure this instance is initialized, and registers an event handler with the Blazor Navigation Manager `LocationChanged` event.
 6. `Dispose` clears up the event registration.
 
@@ -154,11 +154,11 @@ public void SetLockState(bool state)
 }
 ```
 
-The event handler for `LocationChanged` does all the work.  The process is complicated by the fact that the browser displayed Url is the one we are navigating to.  If we cancel navigation, then we need to reset it back to the previous value.
+The event handler for `LocationChanged` does all the work.  The process is complicated by the fact that the browser displayed Url is the one we are navigating to.  If we cancel navigation, we must reset it back to the previous value.
 
 We accomplish this by doing what I call a blind navigation.  
 
-The locked process is to set `_isBlindNavigation` to true and call a `NavigateTo` on the base Navigator in the `LockedNavigation` method, creating a circular reference.  When `OnBaseLocationChanged` gets called the `BlindNavigation` method resets `_isBlindNavigation` and the event handler exits.  `LockedNavigation` raises the `NavigationEventBlocked` event.
+The locked process is to set `_isBlindNavigation` to true and call `NavigateTo` on the base Navigator in the `LockedNavigation` method, creating a circular reference: `_isBlindNavigation` is the exit mechanism .  When `OnBaseLocationChanged` gets called the `BlindNavigation` method resets `_isBlindNavigation` and the event handler exits.  `LockedNavigation` raises the `NavigationEventBlocked` event.
 
 If the lock is not set, we set the global `Uri` to the new Uri and trigger a `LocationChanged` event that triggers routing.
 
@@ -214,10 +214,10 @@ private bool LockedNavigation(string uri)
 
 `PageLocker` is a UI component that interacts with the browser.
 
-It injects the `JsRuntime` and `IBlazrNavigationManager`.
+It injects `JsRuntime` and `IBlazrNavigationManager`.
 
 1. It Registers a handler on the NavigationManager's `LockStateChanged` event.  This drives `SetPageExitCheck` which activates or de-activates the browser `beforeunload` event listener - JS code below.
-2. When `beforeunload` is active `AgentExitAttempt` is wired up to any attempt to exit and drives the event into the NavigationManager to trigger the `BrowserExitAttempted` event.
+2. When `beforeunload` is active `AgentExitAttempt` is wired up so any attempt to exit drives the event into the NavigationManager and raises the `BrowserExitAttempted` event.
 
 ```csharp
 public class PageLocker : ComponentBase, IDisposable
@@ -258,7 +258,7 @@ public class PageLocker : ComponentBase, IDisposable
 
 ### JS Code
 
-The JS code loaded into the SPA is as follows.  It registers or de-registers a method with the browser's `beforeunload` event.  It also provides a callback mechanism to notify the C# code that an attemnpt to exit has been made.
+The JS code loaded into the SPA is as follows.  It registers or de-registers a method with the browser's `beforeunload` event.  It also provides a callback mechanism to notify the C# code that an attempt to exit has been made.
 
 ```js
 window.blazr_setEditorExitCheck = function (dotNetHelper, show) {
@@ -289,13 +289,13 @@ This provides some convenient methods to add the Routing services to an applicat
 
 The implementation solutiuon is based on one of my templates.
 
-## Blazr.Demo.Routing.UI
+### Blazr.Demo.Routing.UI
 
 This contains the UI code.
 
-### EditForm
+#### EditForm
 
-`EditForm` is a demostrator with no data, jusdt a buttton to emulate dirty state.  Note the `PageLocker` component.
+`EditForm` is a demostrator with no data, just a button to emulate dirty state.  Note the `PageLocker` component.
 
 ```razor
 @page "/EditForm"
@@ -313,10 +313,10 @@ This contains the UI code.
     @((MarkupString)this.message)
 </div>
 ```
-There's a lot of code to sort the UI, but the bsics are:
+There's a lot of code to sort the UI, but the basics are:
 
 1. Get the `IBlazrNavigationManager` and convert it to `BlazrNavigationManager`.
-2. Add event handlers so we can display some messages to demo the event functionality.
+2. Add event handlers so we can display messages to demo the event functionality.
 3. Change Edit state by calling `BlazrNavManager.SetLockState`.
 
 ```csharp
@@ -414,6 +414,7 @@ Add the JS to `index.html`
     <script src="_content/Blazr.Routing/site.js"></script>
 ```
 
+## Demo
 
 That's it, it "should" work.  Here's a screen shot:
 
