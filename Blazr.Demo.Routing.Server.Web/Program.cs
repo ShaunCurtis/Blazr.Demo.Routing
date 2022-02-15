@@ -14,6 +14,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 var services = builder.Services;
 services.AddAppBlazorServerServices();
+//services.AddCoreNavigationManager();
 services.AddBlazrNavigationManager();
 
 var app = builder.Build();

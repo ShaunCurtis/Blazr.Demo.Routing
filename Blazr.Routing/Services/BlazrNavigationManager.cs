@@ -1,92 +1,97 @@
 ﻿/// ============================================================
-/// Original Code Adam Stevenson - https://github.com/SL-AdamStevenson
-/// Modified By: Shaun Curtis, Cold Elm Coders
-/// License:  MIT
-/// Mods: Use And Donate
+/// Author: Shaun Curtis, Cold Elm Coders
+/// License: Use And Donate
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
 
+namespace Blazr.Routing;
 
-namespace Blazr.Routing
+public class BlazrNavigationManager : NavigationManager, IBlazrNavigationManager, IDisposable
 {
-    public class BlazrNavigationManager : Microsoft.AspNetCore.Components.NavigationManager
+    private NavigationManager _baseNavigationManager;
+    private bool _isBlindNavigation = false;
+        
+    public bool IsLocked { get; protected set; } = false;
+
+    public event EventHandler<BlazrNavigationEventArgs>? NavigationEventBlocked;
+    public event EventHandler<LockStateEventArgs>? LockStateChanged;
+    public event EventHandler? BrowserExitAttempted;
+
+    public BlazrNavigationManager(NavigationManager? navigationManager)
     {
-        private Microsoft.AspNetCore.Components.NavigationManager _UnderlyingNavigationManager;
-        private bool _isBlindNavigation = false;
+        _baseNavigationManager = navigationManager!;
+        base.Initialize(navigationManager!.BaseUri, navigationManager.Uri);
+        _baseNavigationManager.LocationChanged += OnBaseLocationChanged;
+    }
 
-        public event EventHandler<NavigationData>? BeforeLocationChange;
-
-        public BlazrNavigationManager(Microsoft.AspNetCore.Components.NavigationManager? underlyingNavigationManager)
+    /// <summary>
+    /// Sets the local state of the page
+    /// </summary>
+    /// <param name="state"></param>
+    public void SetLockState(bool state)
+    {
+        if (state != this.IsLocked)
         {
-            _UnderlyingNavigationManager = underlyingNavigationManager!;
-
-            base.Initialize(underlyingNavigationManager!.BaseUri, underlyingNavigationManager.Uri);
-
-            _UnderlyingNavigationManager.LocationChanged += OnUnderlyingNavigationManagerLocationChanged;
-        }
-
-        protected override void EnsureInitialized()
-        {
-            base.Initialize(_UnderlyingNavigationManager.BaseUri, _UnderlyingNavigationManager.Uri);
-        }
-
-        protected override void NavigateToCore(string uri, bool forceLoad)
-        {
-            // Call the underlying navigation manager.
-            _UnderlyingNavigationManager.NavigateTo(uri, forceLoad);
-        }
-
-        private NavigationData NotifyBeforeLocationChange(LocationChangedEventArgs e)
-        {
-            var navigation = new NavigationData()
-            {
-                CurrentLocation = this.Uri,
-                NewLocation = e.Location,
-                IsNavigationIntercepted = e.IsNavigationIntercepted,
-                IsCanceled = false
-            };
-
-            BeforeLocationChange?.Invoke(this, navigation);
-
-            return navigation;
-        }
-
-        private void OnUnderlyingNavigationManagerLocationChanged(object? sender, LocationChangedEventArgs e)
-        {
-            var navigation = NotifyBeforeLocationChange(e);
-
-            // Check our blind navigation flag.  If we are blind navigating
-            // we just set the flag back to false and exit
-            if (_isBlindNavigation)
-            {
-                _isBlindNavigation = false;
-
-                return;
-            }
-
-            // Navigation is cancelled
-            // we set the flag so we don't create a loop with the dummy run
-            if (navigation.IsCanceled)
-            {
-                // prevents a NavigateTo loop
-                _isBlindNavigation = true;
-
-                // Puts the link back - else it will change, but the page will not navigate.
-                _UnderlyingNavigationManager.NavigateTo(this.Uri, false);
-
-                return;
-            }
-
-            // Normal Navigation path
-
-            // NOTE: We set the Uri before calling notify location changed, as it will use this uri property in its args.
-            this.Uri = e.Location;
-
-            // Trigger the Location Changed event for all listeners including the Router
-            this.NotifyLocationChanged(e.IsNavigationIntercepted);
-
-            // Belt and braces to ensure false 
-            _isBlindNavigation = false;
+            this.IsLocked = state;
+            this.NotifyLockStateChanged(this, new LockStateEventArgs(this.IsLocked));
         }
     }
+
+    private void OnBaseLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        // Check if we are blind navigating - i.e. just resetting the display Uri. - Do nothing
+        if (this.BlindNavigation())
+            return;
+
+        // Check if Navigation is locked
+        if (this.LockedNavigation(e.Location))
+            return;
+
+        // Normal Navigation path
+
+        // NOTE: We set the Uri before calling notify location changed, as it will use this uri property in its args.
+        this.Uri = e.Location;
+
+        // Trigger the Location Changed event for all listeners including the Router
+        this.NotifyLocationChanged(e.IsNavigationIntercepted);
+
+        // Belt and braces to ensure false 
+        _isBlindNavigation = false;
+    }
+
+    private bool BlindNavigation()
+    {
+        if (_isBlindNavigation)
+        {
+            _isBlindNavigation = false;
+            return true;
+        }
+        return false;
+    }
+
+    private bool LockedNavigation(string uri)
+    {
+        // Sets the displayed uri back to the orginal if we're locked.
+        if (this.IsLocked)
+        {
+            // prevents a NavigateTo loop
+            _isBlindNavigation = true;
+            _baseNavigationManager.NavigateTo(this.Uri, false);
+            this.NotifyNavigationEventBlocked(this, new BlazrNavigationEventArgs(uri));
+        }
+        return this.IsLocked;
+    }
+
+    protected void NotifyNavigationEventBlocked(object? sender, BlazrNavigationEventArgs e)
+        => this.NavigationEventBlocked?.Invoke(sender, e);
+
+    protected void NotifyLockStateChanged(object? sender, LockStateEventArgs e)
+        => this.LockStateChanged?.Invoke(sender, e);
+
+    public void NotifyBrowserExitAttempt(object? sender)
+        => this.BrowserExitAttempted?.Invoke(sender, EventArgs.Empty);
+
+    public void Dispose()
+        => _baseNavigationManager.LocationChanged -= OnBaseLocationChanged;
 }
+

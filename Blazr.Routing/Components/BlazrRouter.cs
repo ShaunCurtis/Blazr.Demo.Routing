@@ -2,14 +2,11 @@
 //  This is direct copy with the changes highlighted
 //  These are:
 //   1. Change in NavigationManager
-//   2. Disabling of Hotloading because the assemblies are not available
+//   2. Disabling of Hotloading because the assemblies are not available  - Any help with fixing this appreciasted!
 //   ==============================================================================
-
 
 #nullable disable warnings
 
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Reflection.Metadata;
@@ -40,7 +37,7 @@ namespace Blazr.Routing
         private bool _onNavigateCalled;
 
         // <<<====================== THIS IS A CHANGE ========================>>>
-        [Inject] public virtual BlazrNavigationManager NavigationManager { get; set; }
+        [Inject] public virtual IBlazrNavigationManager NavigationManager { get; set; }
 
         [Inject] private INavigationInterception NavigationInterception { get; set; }
 

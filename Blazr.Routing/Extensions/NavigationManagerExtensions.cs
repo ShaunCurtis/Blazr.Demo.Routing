@@ -9,13 +9,18 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Blazr.Routing
+namespace Blazr.Routing;
+
+public static class NavigationManagerExtensions
 {
-    public static class NavigationManagerExtensions
+    public static void AddBlazrNavigationManager(this IServiceCollection services)
     {
-        public static void AddBlazrNavigationManager(this IServiceCollection services)
-        {
-            services.AddScoped<BlazrNavigationManager>();
-        }
+        services.AddScoped<IBlazrNavigationManager, BlazrNavigationManager>();
+    }
+
+    public static void AddCoreNavigationManager(this IServiceCollection services)
+    {
+        services.AddScoped<IBlazrNavigationManager, CoreNavigationManager>();
     }
 }
+

@@ -13,8 +13,10 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<Blazr.Demo.Routing.UI.App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 var services = builder.Services;
-services.AddAppBlazorWASMServices();
-services.AddBlazrNavigationManager();
+{
+    services.AddAppBlazorWASMServices();
+    services.AddBlazrNavigationManager();
+}
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 

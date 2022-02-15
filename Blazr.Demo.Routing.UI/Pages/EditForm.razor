@@ -1,9 +1,14 @@
 ﻿@page "/EditForm"
 @namespace Blazr.NavigationManager.UI
 
-<h3>EditForm</h3>
-
-<div>
-    <button class="btn @this.BtnCss" @onclick="this.SwitchDirtyState" >@this.BtnText</button>
+<PageLocker />
+<div class="p-2 border @this.DivCss border-2 bg-light">
+    <h3>EditForm</h3>
+    <div class="p-2">Click on the button to emulate changing a value in the form.</div>
+    <div class="p-2 m-2 text-end">
+        <button class="btn @this.BtnCss me-1" @onclick="this.SwitchDirtyState">@this.BtnText</button>
+    </div>
 </div>
-
+<div class="p-2 m-2">
+    @((MarkupString)this.message)
+</div>
