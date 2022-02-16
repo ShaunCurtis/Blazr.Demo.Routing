@@ -84,6 +84,9 @@ public class CoreNavigationManager : NavigationManager, IBlazrNavigationManager
         _baseNavigationManager.LocationChanged += OnBaseLocationChanged;
     }
 
+    protected override void NavigateToCore(string uri, bool forceLoad)
+        => _baseNavigationManager.NavigateTo(uri, forceLoad);
+
     protected override void EnsureInitialized()
         => base.Initialize(_baseNavigationManager.BaseUri, _baseNavigationManager.Uri);
 
@@ -139,6 +142,16 @@ public class BlazrNavigationManager : NavigationManager, IBlazrNavigationManager
 
     public void Dispose()
         => _baseNavigationManager.LocationChanged -= OnBaseLocationChanged;
+```
+
+We need to override two base methods to sort Navigation and initialization.
+
+```csharp
+protected override void NavigateToCore(string uri, bool forceLoad)
+    => _baseNavigationManager.NavigateTo(uri, forceLoad);
+
+protected override void EnsureInitialized()
+    => base.Initialize(_baseNavigationManager.BaseUri, _baseNavigationManager.Uri);
 ```
 
 Locking and Unlocking is controlled by `SetLockState`.  It sets `IsLocked` and raises the `LockStateChanged` event.  

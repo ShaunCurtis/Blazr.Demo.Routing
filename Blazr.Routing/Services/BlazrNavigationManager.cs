@@ -37,6 +37,12 @@ public class BlazrNavigationManager : NavigationManager, IBlazrNavigationManager
         }
     }
 
+    protected override void NavigateToCore(string uri, bool forceLoad)
+        => _baseNavigationManager.NavigateTo(uri, forceLoad);
+
+    protected override void EnsureInitialized()
+        => base.Initialize(_baseNavigationManager.BaseUri, _baseNavigationManager.Uri);
+
     private void OnBaseLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         // Check if we are blind navigating - i.e. just resetting the display Uri. - Do nothing
