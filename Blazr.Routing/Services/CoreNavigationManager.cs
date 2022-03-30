@@ -6,7 +6,7 @@
 
 namespace Blazr.Routing;
 
-public class CoreNavigationManager : NavigationManager, IBlazrNavigationManager
+public class CoreNavigationManager : NavigationManager, IBlazrNavigationManager, IDisposable
 {
     private NavigationManager _baseNavigationManager;
 
@@ -26,5 +26,8 @@ public class CoreNavigationManager : NavigationManager, IBlazrNavigationManager
         // Trigger the Location Changed event for all listeners
         this.NotifyLocationChanged(e.IsNavigationIntercepted);
     }
+
+    public void Dispose()
+        => _baseNavigationManager.LocationChanged -= OnBaseLocationChanged;
 }
 

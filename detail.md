@@ -2,17 +2,34 @@
 
 The solution works by replacing the existing `Router` with a very lightly modified version of the out-of-the-box `Router`.  The new `BlazrRouter` replaces the DI injected `NavigationManager` service with an interface defined service.  `IBlazrNavigationManager` defines the same NavigationManager properties and methods as the original.  The Router code doesn't care.
 
-This allows us to define an intermediate NavigationManager between the standard Blazor `NavigationManager` or `RemoteNavigationManager` and the Router.  We now have control over whether we pass navigation requests to the router or discard them.
+We can then define an intermediate NavigationManager between the standard Blazor `NavigationManager` or `RemoteNavigationManager` and the Router amd control over whether we pass navigation requests to the router or discard them.
 
 The one drawback is that the code has no access to `HotReloadManager` (thanks Microsoft!) so hot reloading is disabled.  Anyone know how to do it?
 
 ## Library
 
+### IBlazrNavigationManager
+
+First the interface.  This defines the functionality used by the router and decouples the `BlazrRouter` from the NavigationManager implementation.
+
+```csharp
+public interface IBlazrNavigationManager
+{
+    public string Uri { get; }
+    public string BaseUri { get; }
+    public event EventHandler<LocationChangedEventArgs> LocationChanged;
+    public string ToBaseRelativePath(string uri);
+    public void NavigateTo(string uri, bool forceLoad);
+    public void NavigateTo(string uri, bool forceLoad = false, bool replace = false);
+    public void NavigateTo(string uri, NavigationOptions options);
+}
+```
+
 ### BlazrRouter
 
 The three changes to the standard router are:
 
-1. Changing the type on the injected NavigationManager
+1. Changing the type on the injected `NavigationManager`.
 
 ```csharp
 [Inject] public virtual IBlazrNavigationManager NavigationManager { get; set; }
@@ -51,29 +68,12 @@ public void Dispose()
 }
 ```
 
-### IBlazrNavigationManager
-
-First the interface.  This just defines the functionality used by the router, so we can decouple `BlazrRouter` from the NavigationManager implementation.
-
-```csharp
-public interface IBlazrNavigationManager
-{
-    public string Uri { get; }
-    public string BaseUri { get; }
-    public event EventHandler<LocationChangedEventArgs> LocationChanged;
-    public string ToBaseRelativePath(string uri);
-    public void NavigateTo(string uri, bool forceLoad);
-    public void NavigateTo(string uri, bool forceLoad = false, bool replace = false);
-    public void NavigateTo(string uri, NavigationOptions options);
-}
-```
-
 ## CoreNavigationManager
 
-This is a simple transparent pass through Navigation Manager.  There's no logic applied. Using this with `BlazrRouter` provides the same functionality as the standard router.  Note it inherits from `NavigationManager` and implements `IBlazrNavigationManager`.
+This is a simple transparent pass-through Navigation Manager.  There's no logic applied. Using this with `BlazrRouter` provides the same functionality as the standard router.  Note it inherits from `NavigationManager` and implements `IBlazrNavigationManager`.
 
 ```csharp
-public class CoreNavigationManager : NavigationManager, IBlazrNavigationManager
+public class CoreNavigationManager : NavigationManager, IBlazrNavigationManager, IDisposable
 {
     private NavigationManager _baseNavigationManager;
 
@@ -93,6 +93,9 @@ public class CoreNavigationManager : NavigationManager, IBlazrNavigationManager
         // Trigger the Location Changed event for all listeners
         this.NotifyLocationChanged(e.IsNavigationIntercepted);
     }
+
+    public void Dispose()
+        => _baseNavigationManager.LocationChanged -= OnBaseLocationChanged;
 }
 ```
 
