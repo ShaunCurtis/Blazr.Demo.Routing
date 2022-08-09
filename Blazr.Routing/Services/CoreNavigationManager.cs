@@ -6,7 +6,7 @@
 
 namespace Blazr.Routing;
 
-public class CoreNavigationManager : NavigationManager, IBlazrNavigationManager
+public class CoreNavigationManager : NavigationManager, IBlazrNavigationManager, IDisposable
 {
     private NavigationManager _baseNavigationManager;
 
@@ -28,5 +28,8 @@ public class CoreNavigationManager : NavigationManager, IBlazrNavigationManager
         this.Uri = e.Location;
         this.NotifyLocationChanged(e.IsNavigationIntercepted);
     }
+
+    public void Dispose()
+        => _baseNavigationManager.LocationChanged -= OnBaseLocationChanged;
 }
 
